@@ -58,8 +58,9 @@ def print_menu():
     print("2- Consultar la información de un libro")
     print("3- Consultar los libros de un autor")
     print("4- Libros por género")
+    print("5- Seleccionar el algoritmo de ordenamiento")
     print("6- Seleccionar muestra de libros")
-    print("7- Ordenar los libros por rating")
+    print("7- Ordenar los libros por rating") #para ejecutar esta opción debe haber ejecutado previamente la opción 5 y 6
     print("8- Salir")
 
 def select_data_structure():
