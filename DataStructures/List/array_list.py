@@ -117,7 +117,16 @@ def sub_list(my_list,pos_i,num_elements):
 
     return nueva_lista
 
-
+def selection_sort(my_list, sort_criterio):
+    n = my_list["size"]
+    for i in range(0,n):
+        min_idx = i
+        for j in range(i + 1, n):
+            if sort_criterio(get_element(my_list, j), get_element(my_list, min_idx)) :
+                min_idx = j
+        if min_idx != i:
+            exchange(my_list, i, min_idx)
+    return my_list
 
 def insertion_sort(my_list, sort_crit):
     for i in range(1, size(my_list)):
