@@ -126,3 +126,17 @@ def insertion_sort(my_list, sort_crit):
             exchange(my_list, j-1, i)
             j -= 1
     return my_list
+
+def shell_sort(my_list,cmp_function):
+    n = my_list["size"]
+    gap = n // 2
+    while gap > 0:
+        for i in range(gap, n):
+            temp = my_list["elements"][i]
+            j = i
+            while j >= gap and cmp_function(my_list["elements"][j - gap], temp) > 0:
+                my_list["elements"][j] = my_list["elements"][j - gap]
+                j -= gap
+            my_list["elements"][j] = temp
+        gap //= 2
+    return my_list
