@@ -1,5 +1,11 @@
 from DataStructures.List import list_node as ln
 
+def default_sort_criteria(element_1, element_2):
+
+   is_sorted = False
+   if element_1 < element_2:
+      is_sorted = True
+   return is_sorted
 
 def new_list():
     newlist = {
