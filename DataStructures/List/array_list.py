@@ -122,7 +122,7 @@ def sub_list(my_list,pos_i,num_elements):
 def insertion_sort(my_list, sort_crit):
     for i in range(1, size(my_list)):
         j = i
-        while j > 0 and (get_element(my_list, j) < get_element(my_list, j-1)):
+        while j > 0 and sort_crit(get_element(my_list, j), get_element(my_list, j-1)):
             exchange(my_list, j-1, i)
             j -= 1
     return my_list
