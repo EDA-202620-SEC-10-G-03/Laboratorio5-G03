@@ -132,7 +132,7 @@ def insertion_sort(my_list, sort_crit):
     for i in range(1, size(my_list)):
         j = i
         while j > 0 and sort_crit(get_element(my_list, j), get_element(my_list, j-1)):
-            exchange(my_list, j-1, i)
+            exchange(my_list, j, j-1)
             j -= 1
     return my_list
 
@@ -149,3 +149,5 @@ def shell_sort(my_list,cmp_function):
             my_list["elements"][j] = temp
         gap //= 2
     return my_list
+
+    

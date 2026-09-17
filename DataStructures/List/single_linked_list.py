@@ -210,3 +210,49 @@ def is_present(my_list, element, cmp_function):
     if not is_in_array:
         count = -1
     return count
+
+def selection_sort(my_list, sort_criterio):
+    n = my_list["size"]
+    i = 0
+    while i < n:
+        min_idx = i
+        j = i + 1
+        while j < n:
+            if sort_criterio(get_element(my_list, j), get_element(my_list, min_idx)):
+                min_idx = j
+            j += 1
+            
+        if min_idx != i:
+            exchange(my_list, i, min_idx)
+        i += 1
+        
+    return my_list
+
+def insertion_sort(my_list, sort_crit):
+    n = size(my_list)
+    i = 1
+    while i < n:
+        j = i
+        while j > 0 and sort_crit(get_element(my_list, j), get_element(my_list, j-1)):
+            exchange(my_list, j, j-1)
+            j -= 1
+        i += 1
+        
+    return my_list
+
+def shell_sort(my_list, cmp_function):
+    n = my_list["size"]
+    gap = n // 2
+    while gap > 0:
+        i = gap
+        while i < n:
+            temp = get_element(my_list, i)
+            j = i
+            while j >= gap and cmp_function(get_element(my_list, j - gap), temp) > 0:
+                change_info(my_list, j, get_element(my_list, j - gap))
+                j -= gap
+            change_info(my_list, j, temp)
+            i += 1
+        gap //= 2
+        
+    return my_list
