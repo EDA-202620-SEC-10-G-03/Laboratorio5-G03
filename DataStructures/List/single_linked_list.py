@@ -256,3 +256,47 @@ def shell_sort(my_list, cmp_function):
         gap //= 2
         
     return my_list
+
+def merge(izquierda, derecha, sort_crit):
+    """Combina dos sublistas ordenadas en una sola lista ordenada."""
+    combinada = new_list()
+    i = 0
+    j = 0
+    while i < size(izquierda) and j < size(derecha):
+        elem_izq = get_element(izquierda, i)
+        elem_der = get_element(derecha, j)
+        if sort_crit(elem_izq, elem_der):
+            add_last(combinada, elem_izq)
+            i += 1
+        else:
+            add_last(combinada, elem_der)
+            j += 1
+    while i < size(izquierda):
+        add_last(combinada, get_element(izquierda, i))
+        i += 1
+    while j < size(derecha):
+        add_last(combinada, get_element(derecha, j))
+        j += 1
+    return combinada
+
+
+def merge_sort(my_list, sort_crit):
+    """Ordena la lista encadenada usando el algoritmo merge sort (mezcla)."""
+    n = size(my_list)
+    if n <= 1:
+        return my_list
+
+    mid = n // 2
+    izquierda = sub_list(my_list, 0, mid)
+    derecha = sub_list(my_list, mid, n - mid)
+
+    izquierda = merge_sort(izquierda, sort_crit)
+    derecha = merge_sort(derecha, sort_crit)
+
+    combinada = merge(izquierda, derecha, sort_crit)
+
+    my_list["first"] = combinada["first"]
+    my_list["last"] = combinada["last"]
+    my_list["size"] = combinada["size"]
+
+    return my_list
