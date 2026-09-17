@@ -150,4 +150,45 @@ def shell_sort(my_list,cmp_function):
         gap //= 2
     return my_list
 
-    
+def merge(my_list, left, right, sort_crit):
+    """Combina dos sublistas ordenadas en una sola lista ordenada."""
+    merged = new_list()
+    i = 0
+    j = 0
+    while i < size(left) and j < size(right):
+        elem_left = get_element(left, i)
+        elem_right = get_element(right, j)
+        if sort_crit(elem_left, elem_right):
+            add_last(merged, elem_left)
+            i += 1
+        else:
+            add_last(merged, elem_right)
+            j += 1
+    while i < size(left):
+        add_last(merged, get_element(left, i))
+        i += 1
+    while j < size(right):
+        add_last(merged, get_element(right, j))
+        j += 1
+    return merged
+
+
+def merge_sort(my_list, sort_crit):
+    """Ordena la lista usando el algoritmo merge sort (mezcla)."""
+    n = size(my_list)
+    if n <= 1:
+        return my_list
+
+    mid = n // 2
+    left = sub_list(my_list, 0, mid)
+    right = sub_list(my_list, mid, n - mid)
+
+    left = merge_sort(left, sort_crit)
+    right = merge_sort(right, sort_crit)
+
+    merged = merge(my_list, left, right, sort_crit)
+
+    my_list["elements"] = merged["elements"]
+    my_list["size"] = merged["size"]
+
+    return my_list
