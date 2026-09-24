@@ -302,31 +302,36 @@ def merge_sort(my_list, sort_crit):
     return my_list
 
 def quick_sort(my_list, sort_crit):
-
+    """Ordena la lista encadenada con Quick Sort.
+    Divide en tres listas (menores, iguales, mayores al pivote), ordena
+    recursivamente menores y mayores, y las concatena enlazando nodos.
+    Funciona con criterios estrictos (<) y no estrictos (<=)."""
     if my_list["size"] <= 1:
         return my_list
- 
+
     pivote = get_element(my_list, my_list["size"] // 2)   # pivote: elemento del medio
- 
+
     menores = new_list()
     iguales = new_list()
     mayores = new_list()
- 
+
     actual = my_list["first"]
     while actual is not None:
         info = actual["info"]
-        if sort_crit(info, pivote):
-            add_last(menores, info)
-        elif sort_crit(pivote, info):
-            add_last(mayores, info)
+        antes = sort_crit(info, pivote)     # ¿info va antes (o igual) que el pivote?
+        despues = sort_crit(pivote, info)   # ¿el pivote va antes (o igual) que info?
+        if antes and not despues:
+            add_last(menores, info)         # estrictamente menor
+        elif despues and not antes:
+            add_last(mayores, info)         # estrictamente mayor
         else:
-            add_last(iguales, info)
+            add_last(iguales, info)         # igual al pivote (el pivote siempre cae aquí)
         actual = actual["next"]
- 
+
     quick_sort(menores, sort_crit)
     quick_sort(mayores, sort_crit)
- 
 
+    # Concatenar menores + iguales + mayores enlazando los nodos
     primero = None
     ultimo = None
     total = 0
@@ -338,9 +343,9 @@ def quick_sort(my_list, sort_crit):
                 ultimo["next"] = parte["first"]
             ultimo = parte["last"]
             total += parte["size"]
- 
+
     my_list["first"] = primero
     my_list["last"] = ultimo
     my_list["size"] = total
- 
+
     return my_list
