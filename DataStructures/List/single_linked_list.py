@@ -300,3 +300,47 @@ def merge_sort(my_list, sort_crit):
     my_list["size"] = combinada["size"]
 
     return my_list
+
+def quick_sort(my_list, sort_crit):
+
+    if my_list["size"] <= 1:
+        return my_list
+ 
+    pivote = get_element(my_list, my_list["size"] // 2)   # pivote: elemento del medio
+ 
+    menores = new_list()
+    iguales = new_list()
+    mayores = new_list()
+ 
+    actual = my_list["first"]
+    while actual is not None:
+        info = actual["info"]
+        if sort_crit(info, pivote):
+            add_last(menores, info)
+        elif sort_crit(pivote, info):
+            add_last(mayores, info)
+        else:
+            add_last(iguales, info)
+        actual = actual["next"]
+ 
+    quick_sort(menores, sort_crit)
+    quick_sort(mayores, sort_crit)
+ 
+
+    primero = None
+    ultimo = None
+    total = 0
+    for parte in (menores, iguales, mayores):
+        if parte["size"] > 0:
+            if primero is None:
+                primero = parte["first"]
+            else:
+                ultimo["next"] = parte["first"]
+            ultimo = parte["last"]
+            total += parte["size"]
+ 
+    my_list["first"] = primero
+    my_list["last"] = ultimo
+    my_list["size"] = total
+ 
+    return my_list

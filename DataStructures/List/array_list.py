@@ -151,7 +151,7 @@ def shell_sort(my_list,cmp_function):
     return my_list
 
 def merge(my_list, left, right, sort_crit):
-    """Combina dos sublistas ordenadas en una sola lista ordenada."""
+   
     merged = new_list()
     i = 0
     j = 0
@@ -174,7 +174,7 @@ def merge(my_list, left, right, sort_crit):
 
 
 def merge_sort(my_list, sort_crit):
-    """Ordena la lista usando el algoritmo merge sort (mezcla)."""
+    
     n = size(my_list)
     if n <= 1:
         return my_list
@@ -192,3 +192,33 @@ def merge_sort(my_list, sort_crit):
     my_list["size"] = merged["size"]
 
     return my_list
+
+def partition(my_list, lo, hi, sort_crit):
+    """Particiona my_list[lo..hi] usando como pivote el elemento del medio.
+    Retorna la posición final del pivote."""
+    mid = (lo + hi) // 2
+    exchange(my_list, mid, hi)          # el pivote queda al final
+    pivot = get_element(my_list, hi)
+ 
+    i = lo - 1                          # frontera de los elementos "menores"
+    for j in range(lo, hi):
+        if sort_crit(get_element(my_list, j), pivot):
+            i += 1
+            exchange(my_list, i, j)
+ 
+    exchange(my_list, i + 1, hi)        # pivote a su posición definitiva
+    return i + 1
+ 
+ 
+def quick_sort_rec(my_list, lo, hi, sort_crit):
+    if lo < hi:
+        p = partition(my_list, lo, hi, sort_crit)
+        quick_sort_rec(my_list, lo, p - 1, sort_crit)
+        quick_sort_rec(my_list, p + 1, hi, sort_crit)
+ 
+ 
+def quick_sort(my_list, sort_crit):
+    """Ordena la lista (array_list) con el algoritmo Quick Sort."""
+    quick_sort_rec(my_list, 0, my_list["size"] - 1, sort_crit)
+    return my_list
+ 
