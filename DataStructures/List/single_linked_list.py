@@ -302,45 +302,114 @@ def merge_sort(my_list, sort_crit):
     return my_list
 
 def quick_sort(my_list, sort_crit):
+    """
+    Ordena una Single Linked List usando Quick Sort
+    sin utilizar recursión.
+    """
 
-    if my_list["size"] <= 1:
-        return my_list
- 
-    pivote = get_element(my_list, my_list["size"] // 2)   # pivote: elemento del medio
- 
-    menores = new_list()
-    iguales = new_list()
-    mayores = new_list()
- 
-    actual = my_list["first"]
-    while actual is not None:
-        info = actual["info"]
-        if sort_crit(info, pivote):
-            add_last(menores, info)
-        elif sort_crit(pivote, info):
-            add_last(mayores, info)
-        else:
-            add_last(iguales, info)
-        actual = actual["next"]
- 
-    quick_sort(menores, sort_crit)
-    quick_sort(mayores, sort_crit)
- 
+    # Lista donde iremos construyendo el resultado final
+    resultado = new_list()
 
-    primero = None
-    ultimo = None
-    total = 0
-    for parte in (menores, iguales, mayores):
-        if parte["size"] > 0:
-            if primero is None:
-                primero = parte["first"]
+    # Stack explícito.
+    # Cada elemento será:
+    # ("sort", lista)  -> hay que ordenar la lista
+    # ("append", lista) -> agregar lista al resultado
+    stack = [("sort", my_list)]
+
+    while len(stack) > 0:
+
+        accion, lista = stack.pop()
+
+        # -------------------------------------------------
+        # ORDENAR UNA LISTA
+        # -------------------------------------------------
+        if accion == "sort":
+
+            # Si tiene 0 o 1 elementos, ya está ordenada
+            if lista["size"] <= 1:
+                stack.append(("append", lista))
+                continue
+
+            # Elegimos el pivote del medio
+            pivote = get_element(
+                lista,
+                lista["size"] // 2
+            )
+
+            # Tres partes
+            menores = new_list()
+            iguales = new_list()
+            mayores = new_list()
+
+            # Recorremos la lista
+            actual = lista["first"]
+
+            while actual is not None:
+
+                info = actual["info"]
+
+                antes_pivote = sort_crit(info, pivote)
+                pivote_antes = sort_crit(pivote, info)
+
+                # Caso de igualdad
+                #
+                # Funciona tanto si sort_crit usa < como si usa <=
+                if antes_pivote and pivote_antes:
+                    add_last(iguales, info)
+
+                elif antes_pivote:
+                    add_last(menores, info)
+
+                elif pivote_antes:
+                    add_last(mayores, info)
+
+                else:
+                    add_last(iguales, info)
+
+                actual = actual["next"]
+
+            # -------------------------------------------------
+            # IMPORTANTE:
+            #
+            # Stack es LIFO.
+            #
+            # Queremos procesar:
+            #
+            # menores -> iguales -> mayores
+            #
+            # Por eso los metemos al stack al revés.
+            # -------------------------------------------------
+
+            if mayores["size"] > 0:
+                stack.append(("sort", mayores))
+
+            if iguales["size"] > 0:
+                stack.append(("append", iguales))
+
+            if menores["size"] > 0:
+                stack.append(("sort", menores))
+
+        # -------------------------------------------------
+        # AGREGAR UNA PARTE AL RESULTADO
+        # -------------------------------------------------
+        elif accion == "append":
+
+            if lista["size"] == 0:
+                continue
+
+            if resultado["size"] == 0:
+                resultado["first"] = lista["first"]
+                resultado["last"] = lista["last"]
+
             else:
-                ultimo["next"] = parte["first"]
-            ultimo = parte["last"]
-            total += parte["size"]
- 
-    my_list["first"] = primero
-    my_list["last"] = ultimo
-    my_list["size"] = total
- 
+                resultado["last"]["next"] = lista["first"]
+                resultado["last"] = lista["last"]
+
+            resultado["size"] += lista["size"]
+
+    # Copiamos el resultado a my_list
+    my_list["first"] = resultado["first"]
+    my_list["last"] = resultado["last"]
+    my_list["size"] = resultado["size"]
+
     return my_list
