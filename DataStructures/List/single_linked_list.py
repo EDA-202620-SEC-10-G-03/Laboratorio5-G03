@@ -302,50 +302,114 @@ def merge_sort(my_list, sort_crit):
     return my_list
 
 def quick_sort(my_list, sort_crit):
-    """Ordena la lista encadenada con Quick Sort.
-    Divide en tres listas (menores, iguales, mayores al pivote), ordena
-    recursivamente menores y mayores, y las concatena enlazando nodos.
-    Funciona con criterios estrictos (<) y no estrictos (<=)."""
-    if my_list["size"] <= 1:
-        return my_list
+    """
+    Ordena una Single Linked List usando Quick Sort
+    sin utilizar recursión.
+    """
 
-    pivote = get_element(my_list, my_list["size"] // 2)   # pivote: elemento del medio
+    # Lista donde iremos construyendo el resultado final
+    resultado = new_list()
 
-    menores = new_list()
-    iguales = new_list()
-    mayores = new_list()
+    # Stack explícito.
+    # Cada elemento será:
+    # ("sort", lista)  -> hay que ordenar la lista
+    # ("append", lista) -> agregar lista al resultado
+    stack = [("sort", my_list)]
 
-    actual = my_list["first"]
-    while actual is not None:
-        info = actual["info"]
-        antes = sort_crit(info, pivote)     # ¿info va antes (o igual) que el pivote?
-        despues = sort_crit(pivote, info)   # ¿el pivote va antes (o igual) que info?
-        if antes and not despues:
-            add_last(menores, info)         # estrictamente menor
-        elif despues and not antes:
-            add_last(mayores, info)         # estrictamente mayor
-        else:
-            add_last(iguales, info)         # igual al pivote (el pivote siempre cae aquí)
-        actual = actual["next"]
+    while len(stack) > 0:
 
-    quick_sort(menores, sort_crit)
-    quick_sort(mayores, sort_crit)
+        accion, lista = stack.pop()
 
-    # Concatenar menores + iguales + mayores enlazando los nodos
-    primero = None
-    ultimo = None
-    total = 0
-    for parte in (menores, iguales, mayores):
-        if parte["size"] > 0:
-            if primero is None:
-                primero = parte["first"]
+        # -------------------------------------------------
+        # ORDENAR UNA LISTA
+        # -------------------------------------------------
+        if accion == "sort":
+
+            # Si tiene 0 o 1 elementos, ya está ordenada
+            if lista["size"] <= 1:
+                stack.append(("append", lista))
+                continue
+
+            # Elegimos el pivote del medio
+            pivote = get_element(
+                lista,
+                lista["size"] // 2
+            )
+
+            # Tres partes
+            menores = new_list()
+            iguales = new_list()
+            mayores = new_list()
+
+            # Recorremos la lista
+            actual = lista["first"]
+
+            while actual is not None:
+
+                info = actual["info"]
+
+                antes_pivote = sort_crit(info, pivote)
+                pivote_antes = sort_crit(pivote, info)
+
+                # Caso de igualdad
+                #
+                # Funciona tanto si sort_crit usa < como si usa <=
+                if antes_pivote and pivote_antes:
+                    add_last(iguales, info)
+
+                elif antes_pivote:
+                    add_last(menores, info)
+
+                elif pivote_antes:
+                    add_last(mayores, info)
+
+                else:
+                    add_last(iguales, info)
+
+                actual = actual["next"]
+
+            # -------------------------------------------------
+            # IMPORTANTE:
+            #
+            # Stack es LIFO.
+            #
+            # Queremos procesar:
+            #
+            # menores -> iguales -> mayores
+            #
+            # Por eso los metemos al stack al revés.
+            # -------------------------------------------------
+
+            if mayores["size"] > 0:
+                stack.append(("sort", mayores))
+
+            if iguales["size"] > 0:
+                stack.append(("append", iguales))
+
+            if menores["size"] > 0:
+                stack.append(("sort", menores))
+
+        # -------------------------------------------------
+        # AGREGAR UNA PARTE AL RESULTADO
+        # -------------------------------------------------
+        elif accion == "append":
+
+            if lista["size"] == 0:
+                continue
+
+            if resultado["size"] == 0:
+                resultado["first"] = lista["first"]
+                resultado["last"] = lista["last"]
+
             else:
-                ultimo["next"] = parte["first"]
-            ultimo = parte["last"]
-            total += parte["size"]
+                resultado["last"]["next"] = lista["first"]
+                resultado["last"] = lista["last"]
 
-    my_list["first"] = primero
-    my_list["last"] = ultimo
-    my_list["size"] = total
+            resultado["size"] += lista["size"]
+
+    # Copiamos el resultado a my_list
+    my_list["first"] = resultado["first"]
+    my_list["last"] = resultado["last"]
+    my_list["size"] = resultado["size"]
 
     return my_list
