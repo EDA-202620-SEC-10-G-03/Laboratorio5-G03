@@ -9,7 +9,9 @@ import time
 from DataStructures.List import array_list as al
 from DataStructures.List import single_linked_list as lt
 
-data_dir = os.path.dirname(os.path.realpath('__file__')) + '/Data/GoodReads'
+# Ruta absoluta basada en la ubicación exacta del archivo logic.py
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+data_dir = os.path.join(base_dir, 'Data', 'GoodReads')
 
 sort_algorithm = None
 data_structure = None
@@ -44,7 +46,7 @@ def load_data(catalog):
 
 
 def load_books(catalog):
-    booksfile = data_dir + '/books.csv'
+    booksfile = os.path.join(data_dir, 'books.csv')
     input_file = csv.DictReader(open(booksfile, encoding='utf-8'))
     for book in input_file:
         add_book(catalog, book)
@@ -52,7 +54,7 @@ def load_books(catalog):
 
 
 def load_tags(catalog):
-    tagsfile = data_dir + '/tags.csv'
+    tagsfile = os.path.join(data_dir, 'tags.csv')
     input_file = csv.DictReader(open(tagsfile, encoding='utf-8'))
     for tag in input_file:
         add_tag(catalog, tag)
@@ -60,8 +62,10 @@ def load_tags(catalog):
 
 
 def load_books_tags(catalog):
-    # Completada la ruta del archivo de BOOK_TAGS
-    bookstagsfile = data_dir + '/book_tags.csv'
+    bookstagsfile = os.path.join(data_dir, 'books_tags.csv')
+    if not os.path.exists(bookstagsfile):
+        bookstagsfile = os.path.join(data_dir, 'book_tags.csv')
+
     input_file = csv.DictReader(open(bookstagsfile, encoding='utf-8'))
     for booktag in input_file:
         add_book_tag(catalog, booktag)
@@ -155,7 +159,6 @@ def count_books_by_tag(catalog, tag_name):
     return 0
 
 
-# Funciones de tamaño completadas
 def book_size(catalog):
     return data_structure.size(catalog["books"])
 
@@ -172,32 +175,64 @@ def book_tag_size(catalog):
     return data_structure.size(catalog["book_tags"])
 
 
-def compare_authors(author_name1, author):
-    if author_name1.lower() == author['name'].lower():
-        return 0
-    elif author_name1.lower() > author['name'].lower():
-        return 1
-    return -1
-
-
-def compare_tag_names(name, tag):
-    if (name == tag['name']):
-        return 0
-    elif (name > tag['name']):
-        return 1
-    return -1
-
-
-def compare_book_ids(id, book):
-    if id == book["goodreads_book_id"]:
-        return 0
-    elif id > book["goodreads_book_id"]:
-        return 1
+def compare_authors(author_or_name1, author_or_name2):
+    if isinstance(author_or_name1, str):
+        name = author_or_name1
+        author = author_or_name2
+    elif isinstance(author_or_name2, str):
+        name = author_or_name2
+        author = author_or_name1
     else:
-        return -1
+        name = author_or_name1['name']
+        author = author_or_name2
+
+    author_name = author['name']
+    
+    if name.lower() == author_name.lower():
+        return 0
+    elif name.lower() > author_name.lower():
+        return 1
+    return -1
 
 
-# Criterio de comparación por rating promedio (mayor a menor)
+def compare_tag_names(tag_or_name1, tag_or_name2):
+    if isinstance(tag_or_name1, str):
+        name = tag_or_name1
+        tag = tag_or_name2
+    elif isinstance(tag_or_name2, str):
+        name = tag_or_name2
+        tag = tag_or_name1
+    else:
+        name = tag_or_name1['name']
+        tag = tag_or_name2
+
+    if name == tag['name']:
+        return 0
+    elif name > tag['name']:
+        return 1
+    return -1
+
+
+def compare_book_ids(id_or_book1, id_or_book2):
+    if isinstance(id_or_book1, (int, str)):
+        book_id = int(id_or_book1)
+        book = id_or_book2
+    elif isinstance(id_or_book2, (int, str)):
+        book_id = int(id_or_book2)
+        book = id_or_book1
+    else:
+        book_id = int(id_or_book1["goodreads_book_id"])
+        book = id_or_book2
+
+    target_id = int(book["goodreads_book_id"])
+
+    if book_id == target_id:
+        return 0
+    elif book_id > target_id:
+        return 1
+    return -1
+
+
 def eval_ratings(book1, book2):
     return float(book1['average_rating']) > float(book2['average_rating'])
 
